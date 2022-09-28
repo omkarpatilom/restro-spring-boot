@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cdac.restro.beans.AllPaidUnpaidOrders;
 import com.cdac.restro.beans.CustomerDetails;
 import com.cdac.restro.beans.CustomerOrderDetails;
+import com.cdac.restro.beans.FeedbackDetails;
 import com.cdac.restro.beans.ItemDetails;
 import com.cdac.restro.beans.LoginRequest;
 import com.cdac.restro.beans.LoginResponse;
@@ -24,6 +25,7 @@ import com.cdac.restro.beans.OrderDetails;
 import com.cdac.restro.beans.OrderRequest;
 import com.cdac.restro.beans.PaidOrderDetails;
 import com.cdac.restro.repo.CustomerRepository;
+import com.cdac.restro.repo.FeedbackRepository;
 import com.cdac.restro.repo.ItemDetailsRepository;
 import com.cdac.restro.repo.OrderRepository;
 import com.cdac.restro.repo.PaidOrdersRepository;
@@ -36,6 +38,8 @@ public class ItemController {
 	private ItemDetailsRepository repo;
 	@Autowired
 	private OrderRepository orderRepo;
+	@Autowired
+	private FeedbackRepository feedbackRepo;
 
 
 	@Autowired
@@ -72,6 +76,15 @@ public class ItemController {
 	public ItemDetails createUser(@RequestBody ItemDetails user) {
 		System.out.println(user);
 		return repo.save(user);
+	}
+	@PostMapping("/createFeedback")
+	public FeedbackDetails createFeedback(@RequestBody FeedbackDetails feedbackDetails) {
+		System.out.println(feedbackDetails);
+		return feedbackRepo.save(feedbackDetails);
+	}
+	@GetMapping("/getAllFeedbacks")
+	public List<FeedbackDetails> getAllFeedbacks() {
+		return feedbackRepo.findAll();
 	}
 
 //	@PostMapping("/login")

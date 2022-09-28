@@ -43,7 +43,7 @@ public class LoginResponse {
 
 	@Override
 	public String toString() {
-		return "LoginResponse [role=" + role + ", id=" + id + "]";
+		return "LoginResponse [role=" + role + ", id=" + id + ", message=" + message + "]";
 	}
 
 }
