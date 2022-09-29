@@ -8,6 +8,7 @@ import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,6 +41,8 @@ public class ItemController {
 	private OrderRepository orderRepo;
 	@Autowired
 	private FeedbackRepository feedbackRepo;
+	@Autowired
+	private CustomerRepository custRepo;
 
 
 	@Autowired
@@ -72,8 +75,8 @@ public class ItemController {
 		return repo.findAll();
 	}
 
-	@PostMapping("/createUser")
-	public ItemDetails createUser(@RequestBody ItemDetails user) {
+	@PostMapping("/createItem")
+	public ItemDetails createItem(@RequestBody ItemDetails user) {
 		System.out.println(user);
 		return repo.save(user);
 	}
@@ -87,20 +90,15 @@ public class ItemController {
 		return feedbackRepo.findAll();
 	}
 
-//	@PostMapping("/login")
-//	public LoginResponse login(@RequestBody LoginRequest loginRequest) {
-//		LoginResponse reponse = new LoginResponse();
-//		System.out.println("authenticate " + loginRequest);
-//		List<UserDetails> allUsers = userRepo.findAll();
-//		for (UserDetails obj : allUsers) {
-//			if (obj.getMail().equals(loginRequest.getMail()) && obj.getPassword().equals(loginRequest.getPassword()))
-//				return new LoginResponse(obj.getMail(), obj.getPassword(), obj.getRole(),"success");
-//		}
-//		return new LoginResponse("", "", "","Invalide Credentials");
-//	}
+	@DeleteMapping("/deleteItemByID/{id}")
+	public void deleteItemByID(@PathVariable("id") Integer id) {
+		repo.deleteById(id);
+		
+	}
+	
 	@PostMapping("/createCustomerDetails")
-	public OrderDetails createCustomerDetails(@RequestBody CustomerDetails user) {
-		return null;
+	public CustomerDetails createCustomerDetails(@RequestBody CustomerDetails user) {
+		return custRepo.save(user);
 	}
 
 	@PostMapping("/createOrder")
@@ -119,6 +117,7 @@ public class ItemController {
 		System.out.println("orderDetails " + orderDetails);
 		return orderRepo.save(orderDetails);
 	}
+
 
 	private Integer getItemPriceByID(Integer name) {
 		List<ItemDetails> allItems = getAllItems();
