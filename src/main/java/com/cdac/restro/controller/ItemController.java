@@ -99,6 +99,7 @@ public class ItemController {
 	@PostMapping("/createCustomerDetails")
 	public CustomerDetails createCustomerDetails(@RequestBody CustomerDetails user) {
 		return custRepo.save(user);
+		
 	}
 
 	@PostMapping("/createOrder")
