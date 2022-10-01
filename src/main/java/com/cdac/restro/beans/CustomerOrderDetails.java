@@ -8,6 +8,14 @@ public class CustomerOrderDetails {
 	private String cusName;
 	private Integer itemQuantity;
 	private Integer itemPrice;
+	
+//	-----------
+//	private Integer orderID;
+//	private Integer userID;
+//	private Integer itemID;
+//	private Integer priceWithQuantity;
+//	private String payStatus;
+//	private String userName;
 
 	
 	public Integer getItemQuantity() {

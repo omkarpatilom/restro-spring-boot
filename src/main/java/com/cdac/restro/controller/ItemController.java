@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cdac.restro.beans.AllPaidUnpaidOrders;
+import com.cdac.restro.beans.BillDetails;
 import com.cdac.restro.beans.CustomerDetails;
 import com.cdac.restro.beans.CustomerOrderDetails;
 import com.cdac.restro.beans.FeedbackDetails;
@@ -48,7 +49,6 @@ public class ItemController {
 	@Autowired
 	private ItemDetailService itemService;
 
-
 	@Autowired
 	private PaidOrdersRepository paidOrderRepo;
 	@Autowired
@@ -78,7 +78,7 @@ public class ItemController {
 	public List<ItemDetails> getAllItems() {
 		return repo.findAll();
 	}
-	
+
 	@GetMapping("/getItemsByID/{id}")
 	public ItemDetails getItemsByID(@PathVariable("id") Integer id) {
 		return repo.findById(id).get();
@@ -90,20 +90,23 @@ public class ItemController {
 //		itemService.store(null);
 		return repo.save(user);
 	}
+
 	@PutMapping("/updateItem")
 	public ItemDetails updateItem(@RequestBody ItemDetails item) {
-		ItemDetails existedItem=repo.findById(item.getItemID()).get();
+		ItemDetails existedItem = repo.findById(item.getItemID()).get();
 		existedItem.setItemName(item.getItemName());
 		existedItem.setItemCategory(item.getItemCategory());
 		existedItem.setPrice(item.getPrice());
 //		itemService.store(null);
 		return repo.save(existedItem);
 	}
+
 	@PostMapping("/createFeedback")
 	public FeedbackDetails createFeedback(@RequestBody FeedbackDetails feedbackDetails) {
 		System.out.println(feedbackDetails);
 		return feedbackRepo.save(feedbackDetails);
 	}
+
 	@GetMapping("/getAllFeedbacks")
 	public List<FeedbackDetails> getAllFeedbacks() {
 		return feedbackRepo.findAll();
@@ -112,13 +115,18 @@ public class ItemController {
 	@DeleteMapping("/deleteItemByID/{id}")
 	public void deleteItemByID(@PathVariable("id") Integer id) {
 		repo.deleteById(id);
-		
+
 	}
-	
+	@DeleteMapping("/deleteOrderByID/{id}")
+	public void deleteOrderByID(@PathVariable("id") Integer id) {
+		orderRepo.deleteById(id);
+
+	}
+
 	@PostMapping("/createCustomerDetails")
 	public CustomerDetails createCustomerDetails(@RequestBody CustomerDetails user) {
 		return custRepo.save(user);
-		
+
 	}
 
 	@PostMapping("/createOrder")
@@ -137,7 +145,6 @@ public class ItemController {
 		System.out.println("orderDetails " + orderDetails);
 		return orderRepo.save(orderDetails);
 	}
-
 
 	private Integer getItemPriceByID(Integer name) {
 		List<ItemDetails> allItems = getAllItems();
@@ -181,11 +188,8 @@ public class ItemController {
 			finalOrder.setCusName("ankur");
 			finalOrder.setItemQuantity(detailed.getItemQuantity());
 			finalOrder.setItemPrice(detailed.getItemPrice());
-
 			customerItems.add(finalOrder);
 		}
-
-//		finalOrder.set
 		return customerItems;
 	}
 
@@ -207,21 +211,48 @@ public class ItemController {
 	}
 
 	@GetMapping("/payNow/{cusID}")
-	public List<OrderDetails> payNow(@PathVariable("cusID") Integer cusID) {
+	public BillDetails payNow(@PathVariable("cusID") Integer cusID) {
 		List<OrderDetails> all = orderRepo.findAll();
 		int totalCout = 0;
 
 		all.stream().filter(obj -> obj.getUserID() == cusID).forEach(obj -> {
 			obj.setPayStatus("paid");
+
 			orderRepo.save(obj);
 		});
 
-		return orderRepo.findAll();
+		List<OrderDetails> allPaidItems = all.stream().filter(obj -> obj.getUserID() == cusID)
+				.collect(Collectors.toList());
+		for (OrderDetails obj : allPaidItems) {
+			totalCout = totalCout + obj.getPriceWithQuantity();
+		}
+		BillDetails billDetails=new BillDetails(allPaidItems, totalCout);		
+		
+		System.out.println("+++++++++++++++++++++++");
+		System.out.println("BillDetails:" + billDetails);
+		System.out.println("+++++++++++++++++++++++");
+		return billDetails;
+	}
+	
+	@GetMapping("/getBill/{cusID}")
+	public BillDetails getBill(@PathVariable("cusID") Integer cusID) {
+		List<OrderDetails> all = orderRepo.findAll();
+		int totalCout = 0;
+		List<OrderDetails> allPaidItems = all.stream().filter(obj -> obj.getUserID() == cusID)
+				.collect(Collectors.toList());
+		for (OrderDetails obj : allPaidItems) {
+			totalCout = totalCout + obj.getPriceWithQuantity();
+		}
+		BillDetails billDetails=new BillDetails(allPaidItems, totalCout);		
+		
+		System.out.println("+++++++++++++++++++++++");
+		System.out.println("BillDetails:" + billDetails);
+		System.out.println("+++++++++++++++++++++++");
+		return billDetails;
 	}
 
 	@GetMapping("/getAllOrders")
 	public List<OrderDetails> getAllOrders() {
-
 		return orderRepo.findAll();
 	}
 
