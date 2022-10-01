@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,6 +31,7 @@ import com.cdac.restro.repo.FeedbackRepository;
 import com.cdac.restro.repo.ItemDetailsRepository;
 import com.cdac.restro.repo.OrderRepository;
 import com.cdac.restro.repo.PaidOrdersRepository;
+import com.cdac.restro.service.ItemDetailService;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -43,6 +45,8 @@ public class ItemController {
 	private FeedbackRepository feedbackRepo;
 	@Autowired
 	private CustomerRepository custRepo;
+	@Autowired
+	private ItemDetailService itemService;
 
 
 	@Autowired
@@ -74,11 +78,26 @@ public class ItemController {
 	public List<ItemDetails> getAllItems() {
 		return repo.findAll();
 	}
+	
+	@GetMapping("/getItemsByID/{id}")
+	public ItemDetails getItemsByID(@PathVariable("id") Integer id) {
+		return repo.findById(id).get();
+	}
 
 	@PostMapping("/createItem")
 	public ItemDetails createItem(@RequestBody ItemDetails user) {
 		System.out.println(user);
+//		itemService.store(null);
 		return repo.save(user);
+	}
+	@PutMapping("/updateItem")
+	public ItemDetails updateItem(@RequestBody ItemDetails item) {
+		ItemDetails existedItem=repo.findById(item.getItemID()).get();
+		existedItem.setItemName(item.getItemName());
+		existedItem.setItemCategory(item.getItemCategory());
+		existedItem.setPrice(item.getPrice());
+//		itemService.store(null);
+		return repo.save(existedItem);
 	}
 	@PostMapping("/createFeedback")
 	public FeedbackDetails createFeedback(@RequestBody FeedbackDetails feedbackDetails) {
